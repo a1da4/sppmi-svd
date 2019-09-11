@@ -12,6 +12,7 @@ def preprocess(texts, word_to_id=None, id_to_word=None):
     
     for text in texts:
         words = text.split(" ")
+        words = [w for w in words if len(w) > 0]
 
         for word in words:
             if word not in word_to_id:
