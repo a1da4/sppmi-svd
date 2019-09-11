@@ -25,7 +25,7 @@ def preprocess(texts, word_to_id=None, id_to_word=None):
             #corpora = 
         #else:
             #corpora = 
-                corpora.append(np.array([word_to_id[w] for w in words]))
+        corpora.append(np.array([word_to_id[w] for w in words]))
     #return corpus, word_to_id, id_to_word
     return corpora, word_to_id, id_to_word
 
