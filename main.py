@@ -13,10 +13,6 @@ with open(f_name) as f:
         texts.append(line)
 
 #TODO 第1期と第4期で word_to_id, id_to_word を共有したい
-    # 一度に2つを学習？
-        # util.py の preprocess を編集して、argument に word_to_id, id_to_word を追加？
-        #TODO まずこのまま用いて、1つが正しく学習できていることを確認する
-        #TODO sys.argv で2つのファイルを読み込む
     # word_to_id, id_to_word を txt 形式で保存する？
         # 保存する関数
         # 読み込む関数
@@ -28,7 +24,7 @@ wordvec_size = 100
 
 try:
     from sklearn.utils.extmath import randomized_svd
-    U, S, V = randomized_svd(W, n_vomponents=wordvec_size, n_iter=5, random_state=None)
+    U, S, V = randomized_svd(W, n_components=wordvec_size, n_iter=5, random_state=None)
 except:
     U, S, V = np.linalg.svd(W)
 
@@ -37,10 +33,12 @@ np.save("U",U)
 np.save("S",S) 
 np.save("V",V) 
 
-# U[全ての単語, wordvec_size]とする（重要な部分のみ取り出し）
+# U[全ての単語, wordvec_size]となっている
     # U: target words, S: U, V の重要度（特異値）, V: context words
-#word_vecs = U[:, :wordvec_size]
-word_vecs_svd = np.dot(U[:, :wordvec_size],np.sqrt(S[:wordvec_size, :wordvec_size]))
+    # U*S = [全ての単語, 1次元]になる
+#word_vecs = U[:, :wordvec_size] # 必要ない。Uと同じ
+#word_vecs_svd = np.dot(U[:, :wordvec_size],np.sqrt(S[:wordvec_size, :wordvec_size]))
+word_vecs_svd = np.dot(U,np.sqrt(S))
 
 np.save("wordvec",word_vecs_svd)
 # 正しく学習できているか、確認
