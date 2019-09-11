@@ -52,7 +52,7 @@ def create_co_matrix(corpora, vocab_size, window_size=10):
                     left_word_id = corpus[left_idx]
                     co_matrix[word_id, left_word_id] += 1
 
-                if right_idx < corpus_size:
+                if right_idx < len(corpus):
                     right_word_id = corpus[right_idx]
                     co_matrix[word_id, right_word_id] += 1
 
