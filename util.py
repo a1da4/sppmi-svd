@@ -31,7 +31,7 @@ def preprocess(texts, word_to_id=None, id_to_word=None):
     return corpora, word_to_id, id_to_word
 
 
-def create_co_matrix(corpus, vocab_size, window_size=10):
+def create_co_matrix(corpora, vocab_size, window_size=10):
     '''共起行列の作成
     :param corpus: コーパス（単語IDのリスト）
     :param vocab_size:語彙数
