@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+import re
 from util import preprocess, create_co_matrix, sppmi, most_similar
 
 f_name = sys.argv
@@ -8,6 +9,7 @@ texts = []
 with open(f_name) as f:
     lines = f.readlines()
     for line in lines:
+        line = re.sub(r"\n", "", line)
         texts.append(line)
 
 #TODO 第1期と第4期で word_to_id, id_to_word を共有したい
