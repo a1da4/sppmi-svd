@@ -1,11 +1,27 @@
 import numpy as np
 import math
-def preprocess(texts, word_to_id=None, id_to_word=None):
+def preprocess(texts):
     '''生のコーパス（文毎に区切られているもの）をid化
     '''
-    if word_to_id == None and id_to_word == None:
+    have_to_write = 0
+    try:
+        with open("id_to_word.txt") as f:
+            pairs = f.readlines()
+            word_to_id = {}
+            id_to_word = {}
+            import re
+            for p in pairs:
+                p = re.sub(r"\n", "", p)
+                p = p.split("\t")
+                id = p[0]
+                word = p[1]
+                id_to_word[id] = word
+                word_to_id[word] = id
+
+    except:
         word_to_id = {}
         id_to_word = {}
+        have_to_write = 1
 
     #corpora = None
     corpora = []
@@ -27,6 +43,12 @@ def preprocess(texts, word_to_id=None, id_to_word=None):
         #else:
             #corpora = 
         corpora.append(np.array([word_to_id[w] for w in words]))
+    if have_to_write:
+        with open("id_to_word", "w") as f:
+            for id in id_to_word:
+                f.write(f"{}\t{}")
+                f.write("\n")
+
     #return corpus, word_to_id, id_to_word
     return corpora, word_to_id, id_to_word
 
