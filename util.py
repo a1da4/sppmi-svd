@@ -13,7 +13,7 @@ def preprocess(texts):
             for p in pairs:
                 p = re.sub(r"\n", "", p)
                 p = p.split("\t")
-                id = p[0]
+                id = int(p[0])
                 word = p[1]
                 id_to_word[id] = word
                 word_to_id[word] = id
@@ -44,9 +44,9 @@ def preprocess(texts):
             #corpora = 
         corpora.append(np.array([word_to_id[w] for w in words]))
     if have_to_write:
-        with open("id_to_word", "w") as f:
+        with open("id_to_word.txt", "w") as f:
             for id in id_to_word:
-                f.write(f"{}\t{}")
+                f.write(f"{id}\t{id_to_word[id]}")
                 f.write("\n")
 
     #return corpus, word_to_id, id_to_word
