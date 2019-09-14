@@ -29,9 +29,12 @@ except:
     U, S, V = np.linalg.svd(W)
 
 #TODO saveする名前/ディレクトリを第1期と第4期で区別
-np.save("model/svd_phase4_U",U) 
-np.save("model/svd_phase4_S",S) 
-np.save("model/svd_phase4_V",V) 
+u_name = "model/svd_U_" + f_name.split("/")[-1][:-5]
+s_name = "model/svd_S_" + f_name.split("/")[-1][:-5]
+v_name = "model/svd_V_" + f_name.split("/")[-1][:-5]
+np.save(u_name, U) 
+np.save(s_name, S) 
+np.save(v_name, V) 
 
 # U[全ての単語, wordvec_size]となっている
     # U: target words, S: U, V の重要度（特異値）, V: context words
@@ -40,7 +43,8 @@ np.save("model/svd_phase4_V",V)
 #word_vecs_svd = np.dot(U[:, :wordvec_size],np.sqrt(S[:wordvec_size, :wordvec_size]))
 word_vecs_svd = np.dot(U,np.sqrt(S))
 
-np.save("model/svd_phase4_wordvec",word_vecs_svd)
+wv_name = "model/svd_WV_" + f_name.split("/")[-1][:-5]
+np.save(wv_name, word_vecs_svd)
 # 正しく学習できているか、確認
 most_similar("為る", word_to_id, id_to_word, word_vecs_svd, top=5)
 
