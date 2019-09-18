@@ -43,6 +43,7 @@ def preprocess(texts):
         #else:
             #corpora = 
         corpora.append(np.array([word_to_id[w] for w in words]))
+    
     if have_to_write:
         with open("id_to_word.txt", "w") as f:
             for id in id_to_word:
@@ -104,6 +105,18 @@ def sppmi(C, verbose=False, k=10, eps=1e-8):
                 if cnt % (total//100) == 0:
                     print('%.1f%% done' % (100*cnt/total))
     return M
+
+
+def cos_similarity(x, y, eps=1e-8):
+    '''コサイン類似度の算出
+    :param x: ベクトル
+    :param y: ベクトル
+    :param eps: ”0割り”防止のための微小値
+    :return:
+    '''
+    nx = x / (np.sqrt(np.sum(x ** 2)) + eps)
+    ny = y / (np.sqrt(np.sum(y ** 2)) + eps)
+    return np.dot(nx, ny)
 
 
 def most_similar(query, word_to_id, id_to_word, word_matrix, top=5):
