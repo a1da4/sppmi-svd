@@ -3,7 +3,7 @@ import math
 def preprocess(texts):
     '''生のコーパス（文毎に区切られているもの）をid化
     '''
-    have_to_write = 0
+    make_new_dic = 0
     try:
         with open("id_to_word.txt") as f:
             pairs = f.readlines()
@@ -21,30 +21,32 @@ def preprocess(texts):
     except:
         word_to_id = {}
         id_to_word = {}
-        have_to_write = 1
+        make_new_dic = 1
 
     #corpora = None
     corpora = []
     
+    # id_to_word, word_to_id に対象外の単語を扱う
+    word_to_id['#'] = -1
+    id_to_word[-1] = '#'
+
     for text in texts:
         words = text.split(" ")
         words = [w for w in words if len(w) > 0]
-
         for word in words:
             if word not in word_to_id:
-                new_id = len(word_to_id)
-                word_to_id[word] = new_id
-                id_to_word[new_id] = word
-        #if corpora == None:
-            #corpora = np.array([word_to_id[w] for w in words])
-            #line = 1
-        #elif line == 1:
-            #corpora = 
-        #else:
-            #corpora = 
+                if make_new_dic:
+                    new_id = len(word_to_id)-1
+                    word_to_id[word] = new_id
+                    id_to_word[new_id] = word
+                else:
+                    # id_to_word に存在しない単語＝調査対象外
+                    # '#' で置き換える
+                    # 今後、word: '#', id:-1 には処理を行わない（スキップする）
+                    words[words.index(word)] = '#'
         corpora.append(np.array([word_to_id[w] for w in words]))
     
-    if have_to_write:
+    if make_new_dic:
         with open("id_to_word.txt", "w") as f:
             for id in id_to_word:
                 f.write(f"{id}\t{id_to_word[id]}")
@@ -67,17 +69,21 @@ def create_co_matrix(corpora, vocab_size, window_size=10):
 
     for corpus in corpora:
         for idx, word_id in enumerate(corpus):
+            if word_id == -1:
+                continue
             for i in range(1, window_size + 1):
                 left_idx = idx - i
                 right_idx = idx + i
 
                 if left_idx >= 0:
                     left_word_id = corpus[left_idx]
-                    co_matrix[word_id, left_word_id] += 1
+                    if left_word_id != -1:
+                        co_matrix[word_id, left_word_id] += 1
 
                 if right_idx < len(corpus):
                     right_word_id = corpus[right_idx]
-                    co_matrix[word_id, right_word_id] += 1
+                    if right_word_id != -1:
+                        co_matrix[word_id, right_word_id] += 1
 
     return co_matrix
 
@@ -136,6 +142,8 @@ def most_similar(query, word_to_id, id_to_word, word_matrix, top=5):
     query_vec = word_matrix[query_id]
 
     vocab_size = len(id_to_word)
+    if -1 in id_to_word:
+        vocab_size-=1
 
     similarity = np.zeros(vocab_size)
     for i in range(vocab_size):
