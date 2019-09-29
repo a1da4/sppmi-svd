@@ -43,7 +43,7 @@ np.save(v_name, V)
     # U*S = [全ての単語, 1次元]になる
 #word_vecs = U[:, :wordvec_size] # 必要ない。Uと同じ
 #word_vecs_svd = np.dot(U[:, :wordvec_size],np.sqrt(S[:wordvec_size, :wordvec_size]))
-word_vecs_svd = np.dot(U,np.sqrt(S))
+word_vecs_svd = np.dot(U,np.sqrt(np.diag(S)))
 
 wv_name = "model/svd_WV_" + f_name.split("/")[-1][:-5]
 np.save(wv_name, word_vecs_svd)
