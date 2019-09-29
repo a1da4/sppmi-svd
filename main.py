@@ -18,15 +18,20 @@ with open(f_name) as f:
         # 読み込む関数
 corpora, word_to_id, id_to_word = preprocess(texts)
 vocab_size = len(word_to_id)
+if -1 in id_to_word:
+    vocab_size-=1
 C = create_co_matrix(corpora, vocab_size)
 W = sppmi(C)
 wordvec_size = 100
+# test
+print(C)
+print(W)
+c_name = "model/svd_C_" + f_name.split("/")[-1][:-5]
+w_name = "model/svd_W_" + f_name.split("/")[-1][:-5]
+np.save(c_name, C)
+np.save(w_name, W)
 
-try:
-    from sklearn.utils.extmath import randomized_svd
-    U, S, V = randomized_svd(W, n_components=wordvec_size, n_iter=5, random_state=None)
-except:
-    U, S, V = np.linalg.svd(W)
+U, S, V = np.linalg.svd(W)
 
 #TODO saveする名前/ディレクトリを第1期と第4期で区別
 u_name = "model/svd_U_" + f_name.split("/")[-1][:-5]
@@ -47,4 +52,3 @@ wv_name = "model/svd_WV_" + f_name.split("/")[-1][:-5]
 np.save(wv_name, word_vecs_svd)
 # 正しく学習できているか、確認
 most_similar("為る", word_to_id, id_to_word, word_vecs_svd, top=5)
-
