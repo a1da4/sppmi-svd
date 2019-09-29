@@ -56,7 +56,7 @@ def preprocess(texts):
     return corpora, word_to_id, id_to_word
 
 
-def create_co_matrix(corpora, vocab_size, window_size=10):
+def create_co_matrix(corpora, vocab_size, window_size):
     '''共起行列の作成
     :param corpus: コーパス（単語IDのリスト）
     :param vocab_size:語彙数
@@ -88,28 +88,21 @@ def create_co_matrix(corpora, vocab_size, window_size=10):
     return co_matrix
 
 
-def sppmi(C, verbose=False, k=10, eps=1e-8):
+def sppmi(C, k, eps=1e-8):
     '''SPPMI（正の相互情報量-log(負例)）の作成
     :param C: 共起行列
-    :param verbose: 進行状況を出力するかどうか
     :param k: 負例の数
     :return:
     '''
     M = np.zeros_like(C, dtype=np.float32)
     N = np.sum(C)
     S = np.sum(C, axis=0)
-    total = C.shape[0] * C.shape[1]
-    cnt = 0
 
     for i in range(C.shape[0]):
         for j in range(C.shape[1]):
             pmi = np.log2(C[i, j] * N / (S[j]*S[i]) + eps)
             M[i, j] = max(0, pmi - math.log(k))
 
-            if verbose:
-                cnt += 1
-                if cnt % (total//100) == 0:
-                    print('%.1f%% done' % (100*cnt/total))
     return M
 
 
