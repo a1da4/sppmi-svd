@@ -23,9 +23,6 @@ if -1 in id_to_word:
 C = create_co_matrix(corpora, vocab_size)
 W = sppmi(C)
 wordvec_size = 100
-# test
-print(C)
-print(W)
 c_name = "model/svd_C_" + f_name.split("/")[-1][:-5]
 w_name = "model/svd_W_" + f_name.split("/")[-1][:-5]
 np.save(c_name, C)
