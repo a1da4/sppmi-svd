@@ -153,7 +153,7 @@ def most_similar(query, word_to_id, id_to_word, word_matrix, top=5):
     for i in (-1 * similarity).argsort():
         if id_to_word[i] == query:
             continue
-        print(' %s: %s' % (id_to_word[i], similarity[i]))
+        print(' %s: %.3f' % (id_to_word[i], similarity[i]))
 
         count += 1
         if count >= top:
