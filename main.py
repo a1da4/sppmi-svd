@@ -45,7 +45,7 @@ np.save(v_name, V)
 
 # U[全ての単語, wordvec_size]となっている
     # U: target words, S: U, V の重要度（特異値）, V: context words
-word_vecs_svd = np.dot(U,np.sqrt(np.diag(S[:,:wordvec_size])))
+word_vecs_svd = np.dot(U,np.sqrt(np.diag(S)))
 
 wv_name = "model/svd_WV_" + f_name.split("/")[-1][:-5]
-np.save(wv_name, word_vecs_svd)
+np.save(wv_name, word_vecs_svd[:,:wordvec_size])
