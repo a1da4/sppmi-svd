@@ -3,10 +3,14 @@ import sys
 import numpy as np
 from util import most_similar
 
+wordvec_size=100
+
 f_ = sys.argv
 model_name = f_[-1]
 
 word_vec_svd = np.load(model_name)
+word_vec_svd = word_vec_svd[:, :wordvec_size]
+
 with open("id_to_word.txt") as f:
     pairs = f.readlines()
     word_to_id = {}
