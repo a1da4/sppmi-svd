@@ -34,7 +34,11 @@ w_name = "model/svd_SPPMI_" + f_name.split("/")[-1][:-5]
 np.save(c_name, C)
 np.save(w_name, W)
 
-U, S, V = np.linalg.svd(W)
+try:
+    from scipy.sparse.linalg import svds
+    U, S, V = svds(W, k=wordvec_size)
+except:
+    U, S, V = np.linalg.svd(W)
 
 u_name = "model/svd_U_" + f_name.split("/")[-1][:-5]
 s_name = "model/svd_S_" + f_name.split("/")[-1][:-5]
@@ -48,4 +52,4 @@ np.save(v_name, V)
 word_vecs_svd = np.dot(U,np.sqrt(np.diag(S)))
 
 wv_name = "model/svd_WV_" + f_name.split("/")[-1][:-5]
-np.save(wv_name, word_vecs_svd)
+np.save(wv_name, word_vecs_svd[:,:wordvec_size])
