@@ -1,8 +1,14 @@
 import numpy as np
 import math
 def preprocess(texts):
-    '''生のコーパス（文毎に区切られているもの）をid化
-    '''
+    """ fix text -> id
+
+    :param texts: sentences
+    :param word_to_id: dictionary(word->id)
+    :param id_to_word: dictionary(id->word)
+    
+    :return: corpus(fixed into id), word2id, id2word
+    """ 
     make_new_dic = 0
     try:
         with open("id_to_word.txt") as f:
@@ -26,7 +32,7 @@ def preprocess(texts):
     #corpora = None
     corpora = []
     
-    # id_to_word, word_to_id に対象外の単語を扱う
+    # out of vocab
     word_to_id['#'] = -1
     id_to_word[-1] = '#'
 
@@ -40,9 +46,6 @@ def preprocess(texts):
                     word_to_id[word] = new_id
                     id_to_word[new_id] = word
                 else:
-                    # id_to_word に存在しない単語＝調査対象外
-                    # '#' で置き換える
-                    # 今後、word: '#', id:-1 には処理を行わない（スキップする）
                     words[words.index(word)] = '#'
         corpora.append(np.array([word_to_id[w] for w in words]))
     
@@ -52,18 +55,18 @@ def preprocess(texts):
                 f.write(f"{id}\t{id_to_word[id]}")
                 f.write("\n")
 
-    #return corpus, word_to_id, id_to_word
     return corpora, word_to_id, id_to_word
 
 
 def create_co_matrix(corpora, vocab_size, window_size):
-    '''共起行列の作成
-    :param corpus: コーパス（単語IDのリスト）
-    :param vocab_size:語彙数
-    :param window_size:ウィンドウサイズ（ウィンドウサイズが1のときは、単語の左右1単語がコンテキスト）
-    :return: 共起行列
-    '''
-    #corpus_size = len(corpus)
+    """create cooccur matrix
+
+    :param corpus: corpus(fixed into id)
+    :param vocab_size: vocab size
+    :param window_size: windows size for counting
+
+    :return: cooccur matrix
+    """
     corpus_size = sum([len(c) for c in corpora])
     co_matrix = np.zeros((vocab_size, vocab_size), dtype=np.int32)
 
@@ -88,44 +91,88 @@ def create_co_matrix(corpora, vocab_size, window_size):
     return co_matrix
 
 
-def sppmi(C, k, eps=1e-8):
-    '''SPPMI（正の相互情報量-log(負例)）の作成
-    :param C: 共起行列
-    :param k: 負例の数
-    :return:
-    '''
+def truncate(C, threshold):
+    """ truncate cooccur matrix by threshold value
+    c = c if c > threshold else 0
+
+    :return: fixed cooccur matrix C
+    """
+    C = np.where(C > threshold, C, 0)
+
+    return C
+
+
+def absolute_discounting(C, i, j, d):
+    """ SMOOTHING: absolute discounting
+
+    :param C: cooccur matrix
+    :param i, j: index
+    :param d: discounting value (0, 1)
+
+    :return: smoothed value
+    """
+
+    discounting = max(C[i][j] - d, 0)
+    smoothing = d * np.count_nonzero(C[i]) / C.shape[1]
+
+    return discounting + smoothing
+
+
+def sppmi(C, k, eps=1e-8, smoothing=False):
+    """ compute Shifted Positive PMI (SPPMI)
+
+    :param C: cooccur matrix
+    :param k: number of negative samples in w2v sgns
+
+    :return: SPPMI matrix
+    """
     M = np.zeros_like(C, dtype=np.float32)
     N = np.sum(C)
-    S = np.sum(C, axis=0)
+    Nc = np.sum(C, axis=0)
+    
+    if smoothing:
+        # compute constant value d 
+        size = C.shape[0] * C.shape[1]
+        n1 = size - np.count_nonzero(C-1)
+        n2 = size - np.count_nonzero(C-2)
+        d = n1 / (n1 + 2 * n2)
+        print(f'discount value d: {d}')
+
 
     for i in range(C.shape[0]):
         for j in range(C.shape[1]):
-            pmi = np.log2(C[i, j] * N / (S[j]*S[i]) + eps)
+            Cwc = absolute_discounting(C, i, j, d) if smoothing else C[i, j]
+            #pmi = np.log2(C[i, j] * N / (Nc[j]*Nc[i]) + eps)
+            pmi = np.log2(Cwc * N / (Nc[j]*Nc[i]) + eps)
             M[i, j] = max(0, pmi - math.log(k))
 
     return M
 
 
 def cos_similarity(x, y, eps=1e-8):
-    '''コサイン類似度の算出
-    :param x: ベクトル
-    :param y: ベクトル
-    :param eps: ”0割り”防止のための微小値
-    :return:
-    '''
+    """ compute cos similarity
+    :param x, y: vector
+    :param eps: tiny value to avoid deviding 0
+
+    :return: cos similarity
+    """
+    
     nx = x / (np.sqrt(np.sum(x ** 2)) + eps)
     ny = y / (np.sqrt(np.sum(y ** 2)) + eps)
     return np.dot(nx, ny)
 
 
 def most_similar(query, word_to_id, id_to_word, word_matrix, top=5):
-    '''類似単語の検索
-    :param query: クエリ（テキスト）
-    :param word_to_id: 単語から単語IDへのディクショナリ
-    :param id_to_word: 単語IDから単語へのディクショナリ
-    :param word_matrix: 単語ベクトルをまとめた行列。各行に対応する単語のベクトルが格納されていることを想定する
-    :param top: 上位何位まで表示するか
-    '''
+    """ search most similar top-k words
+    :param query: query word
+    :param word_to_id: dictionary(word->id)
+    :param id_to_word: dictionary(id->word)
+    :param word_matrix: wordvec
+    :param top: top-k
+
+    :return: top-k words sorted cos-similarity
+    """
+    
     if query not in word_to_id:
         print('%s is not found' % query)
         return
