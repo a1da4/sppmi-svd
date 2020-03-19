@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 import re
-from util import preprocess, create_co_matrix, sppmi, most_similar
+from util import preprocess, create_co_matrix, truncate, sppmi, most_similar
 
 def main(f_name, threshold=False, smoothing=False, window_size=10, w2v_sgns=10, wv_size=100):
     """ create wordvec
