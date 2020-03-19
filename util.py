@@ -1,5 +1,7 @@
 import numpy as np
 import math
+from tqdm import tqdm
+
 def preprocess(texts):
     """ fix text -> id
 
@@ -71,7 +73,7 @@ def create_co_matrix(corpora, vocab_size, window_size):
     co_matrix = np.zeros((vocab_size, vocab_size), dtype=np.int32)
 
     for corpus in corpora:
-        for idx, word_id in enumerate(corpus):
+        for idx, word_id in tqem(enumerate(corpus)):
             if word_id == -1:
                 continue
             for i in range(1, window_size + 1):
@@ -139,7 +141,7 @@ def sppmi(C, k, eps=1e-8, smoothing=False):
         print(f'discount value d: {d}')
 
 
-    for i in range(C.shape[0]):
+    for i in tqdm(range(C.shape[0])):
         for j in range(C.shape[1]):
             Cwc = absolute_discounting(C, i, j, d) if smoothing else C[i, j]
             #pmi = np.log2(C[i, j] * N / (Nc[j]*Nc[i]) + eps)
