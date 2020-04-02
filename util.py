@@ -73,7 +73,7 @@ def create_co_matrix(corpora, vocab_size, window_size):
     co_matrix = np.zeros((vocab_size, vocab_size), dtype=np.int32)
 
     for corpus in corpora:
-        for idx, word_id in tqem(enumerate(corpus)):
+        for idx, word_id in enumerate(corpus):
             if word_id == -1:
                 continue
             for i in range(1, window_size + 1):
@@ -111,13 +111,22 @@ def absolute_discounting(C, i, j, d):
     :param i, j: index
     :param d: discounting value (0, 1)
 
+    :param V: vocab. size
+    :param N0: number of words count[word]==0
+
     :return: smoothed value
     """
 
-    discounting = max(C[i][j] - d, 0)
-    smoothing = d * np.count_nonzero(C[i]) / C.shape[1]
+    #discounting = max(C[i][j] - d, 0)
+    #smoothing = d * np.count_nonzero(C[i]) / C.shape[1]
+    if C[i][j] > 0:
+        return C[i][j] - d
+    else:
+        V = C.shape[1]
+        N0 = V - np.count_nonzero(C[i])
+        return d * (V - N0) / N0
 
-    return discounting + smoothing
+    #return discounting + smoothing
 
 
 def sppmi(C, k, eps=1e-8, smoothing=False):

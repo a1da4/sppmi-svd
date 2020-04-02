@@ -1,9 +1,10 @@
-import sys
-import numpy as np
+import os
 import re
+import argparse
+import numpy as np
 from util import preprocess, create_co_matrix, truncate, sppmi, most_similar
 
-def main(f_name, threshold=False, smoothing=False, window_size=10, w2v_sgns=10, wv_size=100):
+def main(args):
     """ create wordvec
     
     :param f_name: data path
@@ -13,7 +14,7 @@ def main(f_name, threshold=False, smoothing=False, window_size=10, w2v_sgns=10, 
     """
 
     texts = []
-    with open(f_name) as f:
+    with open(args.file_path) as f:
         lines = f.readlines()
         for line in lines:
             line = re.sub(r"\n", "", line)
@@ -24,44 +25,56 @@ def main(f_name, threshold=False, smoothing=False, window_size=10, w2v_sgns=10, 
     if -1 in id_to_word:
         vocab_size-=1
 
-    C = create_co_matrix(corpus, vocab_size, window_size)
+    C = create_co_matrix(corpus, vocab_size, args.window_size)
 
     # threshold by min_count
-    if threshold:
-        C = truncate(C, threshold=threshold)
+    if args.threshold:
+        C = truncate(C, threshold=args.threshold)
 
     # use smoothing or not in computing sppmi
-    W = sppmi(C, w2v_sgns, smoothing=smoothing)
+    W = sppmi(C, args.w2v_sgns, smoothing=args.smoothing)
 
-    c_name = "model/svd_C_" + f_name.split("/")[-1][:-5]
-    w_name = "model/svd_SPPMI_" + f_name.split("/")[-1][:-5]
+    os.makedirs('model', exist_ok=True)
+    c_name = "model/C"
+    w_name = "model/SPPMI"
     np.save(c_name, C)
     np.save(w_name, W)
 
     try:
         from scipy.sparse.linalg import svds
-        U, S, V = svds(W, k=wv_size)
+        U, S, V = svds(W, k=args.wv_size)
     except:
         U, S, V = np.linalg.svd(W)
 
-    u_name = "model/svd_U_" + f_name.split("/")[-1][:-5]
-    s_name = "model/svd_S_" + f_name.split("/")[-1][:-5]
-    v_name = "model/svd_V_" + f_name.split("/")[-1][:-5]
+    u_name = "model/svd_U" 
+    s_name = "model/svd_S"
+    v_name = "model/svd_V"
     np.save(u_name, U) 
     np.save(s_name, S) 
     np.save(v_name, V) 
 
-    # U[全ての単語, wv_size]となっている
-        # U: target words, S: U, V の重要度（特異値）, V: context words
     word_vecs_svd = np.dot(U,np.sqrt(np.diag(S)))
 
-    wv_name = "model/svd_WV_" + f_name.split("/")[-1][:-5]
-    np.save(wv_name, word_vecs_svd[:,:wv_size])
+    wv_name = "model/WV"
+    np.save(wv_name, word_vecs_svd[:,:args.wv_size])
 
     return
 
 
+def cli_main():
+    parser = argparse.ArgumentParser()
+    
+    parser.add_argument('--file_path', help='a path of corpus')
+    parser.add_argument('--threshold', default=False, help='adopt threshold to co-occur matrix or not')
+    parser.add_argument('--smoothing', default=False, help='adopt absolute discounting or not')
+    parser.add_argument('--window_size', default=10, help='window size for co-occur matrix')
+    parser.add_argument('--w2v_sgns', default=10, help='num of negative samples in computing SPPMI')
+    parser.add_argument('--wv_size', default=100, help='size of word vector')
+
+    args = parser.parse_args()
+    main(args)
+
+
 if __name__ == '__main__':
-    f_name = sys.argv[1]
-    main(f_name)
+    cli_main()
      
