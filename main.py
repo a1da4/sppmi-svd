@@ -1,6 +1,7 @@
 import os
 import re
 import argparse
+
 import numpy as np
 from util import preprocess, create_co_matrix, truncate, sppmi, most_similar
 
