@@ -119,6 +119,8 @@ def absolute_discounting(C, i, j, d):
 
     #discounting = max(C[i][j] - d, 0)
     #smoothing = d * np.count_nonzero(C[i]) / C.shape[1]
+    #return discounting + smoothing
+
     if C[i][j] > 0:
         return C[i][j] - d
     else:
@@ -126,7 +128,6 @@ def absolute_discounting(C, i, j, d):
         N0 = V - np.count_nonzero(C[i])
         return d * (V - N0) / N0
 
-    #return discounting + smoothing
 
 
 def sppmi(C, k, eps=1e-8, smoothing=False):
@@ -153,9 +154,8 @@ def sppmi(C, k, eps=1e-8, smoothing=False):
     for i in tqdm(range(C.shape[0])):
         for j in range(C.shape[1]):
             Cwc = absolute_discounting(C, i, j, d) if smoothing else C[i, j]
-            #pmi = np.log2(C[i, j] * N / (Nc[j]*Nc[i]) + eps)
-            pmi = np.log2(Cwc * N / (Nc[j]*Nc[i]) + eps)
-            M[i, j] = max(0, pmi - math.log(k))
+            shifted_positive_pmi = np.log2(Cwc * N / (Nc[j]*Nc[i]) + eps)
+            M[i, j] = max(0, shifted_positive_pmi - math.log(k))
 
     return M
 
