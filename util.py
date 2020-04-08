@@ -12,7 +12,8 @@ def preprocess(texts, id2word_path):
     :return: corpus(fixed into id), word2id, id2word
     """ 
     make_new_dic = 0
-    try:
+
+    if id2word_path != None:
         with open(id2word_path) as f:
             pairs = f.readlines()
             word_to_id = {}
@@ -26,7 +27,7 @@ def preprocess(texts, id2word_path):
                 id_to_word[id] = word
                 word_to_id[word] = id
 
-    except:
+    else:
         word_to_id = {}
         id_to_word = {}
         make_new_dic = 1
