@@ -66,11 +66,11 @@ def cli_main():
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--file_path', help='a path of corpus')
-    parser.add_argument('--threshold', default=False, help='adopt threshold to co-occur matrix or not')
-    parser.add_argument('--smoothing', default=False, help='adopt absolute discounting or not')
-    parser.add_argument('--window_size', default=10, help='window size for co-occur matrix')
-    parser.add_argument('--w2v_sgns', default=10, help='num of negative samples in computing SPPMI')
-    parser.add_argument('--wv_size', default=100, help='size of word vector')
+    parser.add_argument('--threshold', type=int, default=0, help='adopt threshold to co-occur matrix')
+    parser.add_argument('--smoothing', type=bool, default=False, help='adopt absolute discounting or not')
+    parser.add_argument('--window_size', type=int, default=10, help='window size for co-occur matrix')
+    parser.add_argument('--w2v_sgns', type=int, default=10, help='num of negative samples in computing SPPMI')
+    parser.add_argument('--wv_size', type=int, default=100, help='size of word vector')
 
     args = parser.parse_args()
     main(args)
