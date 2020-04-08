@@ -2,7 +2,7 @@ import numpy as np
 import math
 from tqdm import tqdm
 
-def preprocess(texts):
+def preprocess(texts, id2word_path):
     """ fix text -> id
 
     :param texts: sentences
@@ -13,7 +13,7 @@ def preprocess(texts):
     """ 
     make_new_dic = 0
     try:
-        with open("id_to_word.txt") as f:
+        with open(id2word_path) as f:
             pairs = f.readlines()
             word_to_id = {}
             id_to_word = {}

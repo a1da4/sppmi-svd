@@ -13,6 +13,9 @@ def main(args):
     :param w2v_sgns: num of samples in w2v skip-gram negative-sampling(sgns) 
     :param wv_size: the size of wordvec WV = [vocab_size, wv_size]
     """
+    print(type(args.window_size))
+    print(type(args.threshold))
+    print(type(args.smoothing))
 
     texts = []
     with open(args.file_path) as f:
@@ -21,7 +24,7 @@ def main(args):
             line = re.sub(r"\n", "", line)
             texts.append(line)
 
-    corpus, word_to_id, id_to_word = preprocess(texts)
+    corpus, word_to_id, id_to_word = preprocess(texts, args.id2word_path)
     vocab_size = len(word_to_id)
     if -1 in id_to_word:
         vocab_size-=1
@@ -66,7 +69,8 @@ def cli_main():
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--file_path', help='a path of corpus')
-    parser.add_argument('--threshold', type=int, default=0, help='adopt threshold to co-occur matrix')
+    parser.add_argument('--id2word_path', help='a path of index to word lists, id_to_word.txt')
+    parser.add_argument('--threshold', type=int, default=0, help='adopt threshold to co-occur matrix or not')
     parser.add_argument('--smoothing', type=bool, default=False, help='adopt absolute discounting or not')
     parser.add_argument('--window_size', type=int, default=10, help='window size for co-occur matrix')
     parser.add_argument('--w2v_sgns', type=int, default=10, help='num of negative samples in computing SPPMI')
