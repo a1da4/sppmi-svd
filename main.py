@@ -13,6 +13,7 @@ def main(args):
     :param w2v_sgns: num of samples in w2v skip-gram negative-sampling(sgns) 
     :param wv_size: the size of wordvec WV = [vocab_size, wv_size]
     """
+    print(args)
 
     texts = []
     with open(args.file_path) as f:
