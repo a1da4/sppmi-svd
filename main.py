@@ -28,6 +28,7 @@ def main(args):
         vocab_size-=1
 
     C = create_co_matrix(corpus, vocab_size, args.window_size)
+    del corpus
 
     # threshold by min_count
     if args.threshold:
