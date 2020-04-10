@@ -1,29 +1,39 @@
-# main.py で学習したモデルを用いて、複数の埋め込み空間に共起する単語の距離を計算する
-import sys
+import re
+import argparse
 import numpy as np
 from util import most_similar
 
-wordvec_size=100
+def main(args):
+    """ Display most similar k words
+    """
+    print(args)
 
-f_ = sys.argv
-model_name = f_[-1]
+    word_vec_svd = np.load(args.model_path)
 
-word_vec_svd = np.load(model_name)
-word_vec_svd = word_vec_svd[:, :wordvec_size]
+    with open(args.id2word_path) as f:
+        pairs = f.readlines()
+        word_to_id = {}
+        id_to_word = {}
+        for p in pairs:
+            p = re.sub(r"\n", "", p)
+            p = p.split("\t")
+            id = int(p[0])
+            word = p[1]
+            id_to_word[id] = word
+            word_to_id[word] = id
 
-with open("id_to_word.txt") as f:
-    pairs = f.readlines()
-    word_to_id = {}
-    id_to_word = {}
-    import re
-    for p in pairs:
-        p = re.sub(r"\n", "", p)
-        p = p.split("\t")
-        id = int(p[0])
-        word = p[1]
-        id_to_word[id] = word
-        word_to_id[word] = id
-#print(word_to_id, id_to_word)
-for word in word_to_id:
-    #print(most_similar(word, word_to_id, id_to_word, word_vec_svd))
-    most_similar(word, word_to_id, id_to_word, word_vec_svd)
+    for word in word_to_id:
+        most_similar(word, word_to_id, id_to_word, word_vec_svd)
+
+
+def cli_main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model_path', help='path of wordvec model')
+    parser.add_argument('--id2word_path', help='path of id2word list')
+    args = parser.parse_args()
+    
+    main(args)
+
+
+if __name__ == '__main__':
+    cli_main()
