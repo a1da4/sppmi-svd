@@ -131,11 +131,12 @@ def absolute_discounting(C, i, j, d):
 
 
 
-def sppmi(C, k, eps=1e-8, smoothing=False):
+def sppmi(C, k, eps=1e-8, has_abs_dis=False):
     """ compute Shifted Positive PMI (SPPMI)
 
     :param C: cooccur matrix
     :param k: number of negative samples in w2v sgns
+    :param has_abs_dis: bool, do absolute discounting smoothing or not
 
     :return: SPPMI matrix
     """
@@ -143,7 +144,7 @@ def sppmi(C, k, eps=1e-8, smoothing=False):
     N = np.sum(C)
     Nc = np.sum(C, axis=0)
     
-    if smoothing:
+    if has_abs_dis:
         # compute constant value d 
         size = C.shape[0] * C.shape[1]
         n1 = size - np.count_nonzero(C-1)
@@ -154,7 +155,7 @@ def sppmi(C, k, eps=1e-8, smoothing=False):
 
     for i in tqdm(range(C.shape[0])):
         for j in range(C.shape[1]):
-            Cwc = absolute_discounting(C, i, j, d) if smoothing else C[i, j]
+            Cwc = absolute_discounting(C, i, j, d) if has_abs_dis else C[i, j]
             shifted_positive_pmi = np.log2(Cwc * N / (Nc[j]*Nc[i]) + eps)
             M[i, j] = max(0, shifted_positive_pmi - math.log(k))
 

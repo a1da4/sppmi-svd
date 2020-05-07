@@ -35,7 +35,7 @@ def main(args):
         C = truncate(C, threshold=args.threshold)
 
     # use smoothing or not in computing sppmi
-    W = sppmi(C, args.w2v_sgns, smoothing=args.smoothing)
+    W = sppmi(C, args.w2v_sgns, has_abs_dis=args.has_abs_dis)
 
     os.makedirs('model', exist_ok=True)
     c_name = "model/C"
@@ -70,7 +70,7 @@ def cli_main():
     parser.add_argument('--file_path', help='a path of corpus')
     parser.add_argument('--id2word_path', help='a path of index to word lists, id_to_word.txt')
     parser.add_argument('--threshold', type=int, default=0, help='adopt threshold to co-occur matrix or not')
-    parser.add_argument('--smoothing', action='store_true', help='adopt absolute discounting or not')
+    parser.add_argument('--has_abs_dis', action='store_true', help='adopt absolute discounting or not')
     parser.add_argument('--window_size', type=int, default=10, help='window size for co-occur matrix')
     parser.add_argument('--w2v_sgns', type=int, default=10, help='num of negative samples in computing SPPMI')
     parser.add_argument('--wv_size', type=int, default=100, help='size of word vector')
