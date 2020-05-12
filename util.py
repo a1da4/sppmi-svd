@@ -1,67 +1,27 @@
 import numpy as np
 import math
+import re
+import _pickle
 from tqdm import tqdm
 
-def preprocess(texts, id2word_path):
+def load_pickle(pickle_id2word):
     """ fix text -> id
 
-    :param texts: sentences
-    :param word_to_id: dictionary(word->id)
     :param id_to_word: dictionary(id->word)
+    :param word_to_word: dictionary(word->id)
     
-    :return: corpus(fixed into id), word2id, id2word
+    :return: id2word, word2id
     """ 
-    make_new_dic = 0
+    word_to_id = {}
 
-    if id2word_path != None:
-        with open(id2word_path) as f:
-            pairs = f.readlines()
-            word_to_id = {}
-            id_to_word = {}
-            import re
-            for p in pairs:
-                p = re.sub(r"\n", "", p)
-                p = p.split("\t")
-                id = int(p[0])
-                word = p[1]
-                id_to_word[id] = word
-                word_to_id[word] = id
-
-    else:
-        word_to_id = {}
-        id_to_word = {}
-        make_new_dic = 1
-
-    #corpora = None
-    corpora = []
-    
-    # out of vocab
-    word_to_id['#'] = -1
-    id_to_word[-1] = '#'
-
-    for text in texts:
-        words = text.split(" ")
-        words = [w for w in words if len(w) > 0]
-        for word in words:
-            if word not in word_to_id:
-                if make_new_dic:
-                    new_id = len(word_to_id)-1
-                    word_to_id[word] = new_id
-                    id_to_word[new_id] = word
-                else:
-                    words[words.index(word)] = '#'
-        corpora.append(np.array([word_to_id[w] for w in words]))
-    
-    if make_new_dic:
-        with open("id_to_word.txt", "w") as f:
-            for id in id_to_word:
-                f.write(f"{id}\t{id_to_word[id]}")
-                f.write("\n")
-
-    return corpora, word_to_id, id_to_word
+    fp = open(pickle_id2word, 'rb')
+    id_to_word = _pickle.load(fp)
+    for index in id_to_word:
+        word_to_id[id_to_word[index]] = index
+    return id_to_word, word_to_id
 
 
-def create_co_matrix(corpora, vocab_size, window_size):
+def create_co_matrix(file_path, word_to_id, vocab_size, window_size):
     """create cooccur matrix
 
     :param corpus: corpus(fixed into id)
@@ -70,31 +30,43 @@ def create_co_matrix(corpora, vocab_size, window_size):
 
     :return: cooccur matrix
     """
-    corpus_size = sum([len(c) for c in corpora])
     co_matrix = np.zeros((vocab_size, vocab_size), dtype=np.int32)
 
-    for corpus in corpora:
-        for idx, word_id in enumerate(corpus):
-            if word_id == -1:
-                continue
-            for i in range(1, window_size + 1):
-                left_idx = idx - i
-                right_idx = idx + i
+    import time
+    start = time.time()
 
-                if left_idx >= 0:
-                    left_word_id = corpus[left_idx]
-                    if left_word_id != -1:
-                        co_matrix[word_id, left_word_id] += 1
+    with open(file_path) as fp:
+        for sentence in fp:
+            words = re.sub(r'\n', '', sentence).split(' ')
 
-                if right_idx < len(corpus):
-                    right_word_id = corpus[right_idx]
-                    if right_word_id != -1:
-                        co_matrix[word_id, right_word_id] += 1
+            for idx, word in enumerate(words):
+                if word in word_to_id:
+                    word_id = word_to_id[word]
+                else:
+                    continue
 
+                for i in range(1, window_size + 1):
+                    left_idx = idx - i
+                    right_idx = idx + i
+
+                    if left_idx >= 0:
+                        left_word = words[left_idx]
+                        if left_word in word_to_id:
+                            left_word_id = word_to_id[left_word]
+                            co_matrix[word_id, left_word_id] += 1
+
+                    if right_idx < len(words):
+                        right_word = words[right_idx]
+                        if right_word in word_to_id:
+                            right_word_id = word_to_id[right_word]
+                            co_matrix[word_id, right_word_id] += 1
+
+    end = time.time()
+    print(f'{end-start} sec')
     return co_matrix
 
 
-def truncate(C, threshold):
+def threshold_cooccur(C, threshold):
     """ truncate cooccur matrix by threshold value
     c = c if c > threshold else 0
 
