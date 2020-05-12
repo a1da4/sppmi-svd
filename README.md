@@ -3,12 +3,10 @@
 ## Authors: Omer Levy, and Yoav Goldberg
 ## My explanation of this paper [link](https://github.com/a1da4/paper/issues/27)
 ## Arguments
-* --file\_path: path, corpus you want to train
-* --id2word\_path: path, index to word file path (split by tab)  
-I will fix this path, not text file but dict type pickle
-* --threshold: int, adopt threshold to cooccur matrix or not
-* --has\_abs\_dis: bool(call this argument: True, else False), adopt absolute discoutning smoothing or not
-* --window\_size: int, window size in counting co-occurence
-* --w2v\_sgns: int, num of negative samples in word2vec (in SPPMI-SVD, SPPMI uses -log(#negative samples) )
-* --wv\_size: int, size of word vector  
-I will fix this path into '--size'
+* -f, --file\_path: path, corpus you want to train
+* -p, --pickle\_id2word: path, pickle of index2word dictionary
+* -t, --threshold: int, adopt threshold to cooccur matrix or not
+* -a, --has\_abs\_dis: bool(call this argument: True, else False), adopt absolute discoutning smoothing or not
+* -w, --window\_size: int, window size in counting co-occurence
+* -s, --shift: int, num of negative samples in word2vec (in SPPMI-SVD, SPPMI uses -log(#negative samples) )
+* -d, --dim: int, size of word vector  
