@@ -1,64 +1,53 @@
 import numpy as np
 import math
+import _pickle
 from tqdm import tqdm
 
-def preprocess(texts, id2word_path):
+def preprocess(corpus, pickle_id2word):
     """ fix text -> id
 
     :param texts: sentences
-    :param word_to_id: dictionary(word->id)
     :param id_to_word: dictionary(id->word)
     
-    :return: corpus(fixed into id), word2id, id2word
+    :return: corpus_replaced(fixed word into id), word2id, id2word
     """ 
-    make_new_dic = 0
+    make_new_dic = False
+    id_to_word = {}
+    word_to_id = {}
 
-    if id2word_path != None:
-        with open(id2word_path) as f:
-            pairs = f.readlines()
-            word_to_id = {}
-            id_to_word = {}
-            import re
-            for p in pairs:
-                p = re.sub(r"\n", "", p)
-                p = p.split("\t")
-                id = int(p[0])
-                word = p[1]
-                id_to_word[id] = word
-                word_to_id[word] = id
+    try:
+        fp = open(pickle_id2word, 'rb')
+        id_to_word = _pickle.load(fp)
+        for id in id_to_word:
+            word_to_id[id_to_word[id]] = id
 
-    else:
-        word_to_id = {}
-        id_to_word = {}
-        make_new_dic = 1
+    except:
+        make_new_dic = True
 
-    #corpora = None
-    corpora = []
+    corpus_replaced = []
     
     # out of vocab
-    word_to_id['#'] = -1
     id_to_word[-1] = '#'
+    word_to_id['#'] = -1
 
-    for text in texts:
+    for text in corpus:
         words = text.split(" ")
         words = [w for w in words if len(w) > 0]
         for word in words:
-            if word not in word_to_id:
+            if word not in id_to_word.values():
                 if make_new_dic:
                     new_id = len(word_to_id)-1
-                    word_to_id[word] = new_id
                     id_to_word[new_id] = word
+                    word_to_id[word] = new_id
                 else:
                     words[words.index(word)] = '#'
-        corpora.append(np.array([word_to_id[w] for w in words]))
+        corpus_replaced.append(np.array([word_to_id[w] for w in words]))
     
     if make_new_dic:
-        with open("id_to_word.txt", "w") as f:
-            for id in id_to_word:
-                f.write(f"{id}\t{id_to_word[id]}")
-                f.write("\n")
+        fp = open('dic_id2word.pkl', 'wb')
+        _pickle.dump(id_to_word, fp)
 
-    return corpora, word_to_id, id_to_word
+    return corpus_replaced, id_to_word
 
 
 def create_co_matrix(corpora, vocab_size, window_size):
@@ -94,7 +83,7 @@ def create_co_matrix(corpora, vocab_size, window_size):
     return co_matrix
 
 
-def truncate(C, threshold):
+def threshold_cooccur(C, threshold):
     """ truncate cooccur matrix by threshold value
     c = c if c > threshold else 0
 
