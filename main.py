@@ -21,12 +21,14 @@ def main(args):
             line = re.sub(r"\n", "", line)
             corpus.append(line)
 
+    print('Preprocessing...')
     corpus_replaced, id_to_word = preprocess(corpus, args.pickle_id2word)
     vocab_size = len(id_to_word)
     # id=-1 means unknown words (not in the list of target words)
     if -1 in id_to_word:
         vocab_size-=1
 
+    print('Creating co-occur matrix...')
     C = create_co_matrix(corpus_replaced, vocab_size, args.window_size)
     del corpus, corpus_replaced
 
@@ -34,6 +36,7 @@ def main(args):
     if args.threshold:
         C = threshold_cooccur(C, threshold=args.threshold)
 
+    print('Computing sppmi matrix...')
     # use smoothing or not in computing sppmi
     W = sppmi(C, args.shift, has_abs_dis=args.has_abs_dis)
 

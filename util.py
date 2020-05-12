@@ -30,7 +30,7 @@ def preprocess(corpus, pickle_id2word):
     id_to_word[-1] = '#'
     word_to_id['#'] = -1
 
-    for text in corpus:
+    for text in tqdm(corpus):
         words = text.split(" ")
         words = [w for w in words if len(w) > 0]
         for word in words:
@@ -50,7 +50,7 @@ def preprocess(corpus, pickle_id2word):
     return corpus_replaced, id_to_word
 
 
-def create_co_matrix(corpora, vocab_size, window_size):
+def create_co_matrix(corpus, vocab_size, window_size):
     """create cooccur matrix
 
     :param corpus: corpus(fixed into id)
@@ -59,11 +59,10 @@ def create_co_matrix(corpora, vocab_size, window_size):
 
     :return: cooccur matrix
     """
-    corpus_size = sum([len(c) for c in corpora])
     co_matrix = np.zeros((vocab_size, vocab_size), dtype=np.int32)
 
-    for corpus in corpora:
-        for idx, word_id in enumerate(corpus):
+    for sentence in tqdm(corpus):
+        for idx, word_id in enumerate(sentence):
             if word_id == -1:
                 continue
             for i in range(1, window_size + 1):
@@ -71,12 +70,12 @@ def create_co_matrix(corpora, vocab_size, window_size):
                 right_idx = idx + i
 
                 if left_idx >= 0:
-                    left_word_id = corpus[left_idx]
+                    left_word_id = sentence[left_idx]
                     if left_word_id != -1:
                         co_matrix[word_id, left_word_id] += 1
 
-                if right_idx < len(corpus):
-                    right_word_id = corpus[right_idx]
+                if right_idx < len(sentence):
+                    right_word_id = sentence[right_idx]
                     if right_word_id != -1:
                         co_matrix[word_id, right_word_id] += 1
 
