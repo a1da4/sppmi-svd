@@ -7,8 +7,7 @@ import numpy as np
 from util import load_pickle, create_co_matrix, threshold_cooccur, sppmi, most_similar
 
 def main(args):
-    """ create wordvec
-    
+    """ create word vector
     :param file_path: path of corpus
     :param window_size: window size
     :param shift: num of samples in w2v skip-gram negative-sampling(sgns) 
@@ -19,6 +18,7 @@ def main(args):
     print('Loading dictionary...')
     id_to_word, word_to_id = load_pickle(args.pickle_id2word)
     vocab_size = len(id_to_word)
+    print(f'  {vocab_size} words')
 
     print('Creating co-occur matrix...')
     C = create_co_matrix(args.file_path, word_to_id, vocab_size, args.window_size)

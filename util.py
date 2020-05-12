@@ -1,8 +1,8 @@
 import numpy as np
 import math
-<<<<<<< HEAD
 import re
 import _pickle
+
 from tqdm import tqdm
 
 def load_pickle(pickle_id2word):
@@ -36,7 +36,8 @@ def create_co_matrix(file_path, word_to_id, vocab_size, window_size):
 
     with open(file_path) as fp:
         for sentence in fp:
-            words = re.sub(r'\n', '', sentence).split(' ')
+            words = re.sub(r'\n', '', sentence).split()
+
             for idx, word in enumerate(words):
                 if word in word_to_id:
                     word_id = word_to_id[word]
@@ -60,7 +61,7 @@ def create_co_matrix(file_path, word_to_id, vocab_size, window_size):
                             co_matrix[word_id, right_word_id] += 1
 
     end = time.time()
-    print(f'{end-start} sec')
+    print(f'  {end-start} sec')
     return co_matrix
 
 
