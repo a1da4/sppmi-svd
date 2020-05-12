@@ -1,5 +1,6 @@
 import numpy as np
 import math
+<<<<<<< HEAD
 import re
 import _pickle
 from tqdm import tqdm
@@ -7,9 +8,19 @@ from tqdm import tqdm
 def load_pickle(pickle_id2word):
     """ fix text -> id
 
+=======
+import _pickle
+from tqdm import tqdm
+
+def preprocess(corpus, pickle_id2word):
+    """ fix text -> id
+
+    :param texts: sentences
+>>>>>>> 432c0265212bba0af3fb12a9412a45db4e4321ad
     :param id_to_word: dictionary(id->word)
     :param word_to_word: dictionary(word->id)
     
+<<<<<<< HEAD
     :return: id2word, word2id
     """ 
     word_to_id = {}
@@ -22,6 +33,50 @@ def load_pickle(pickle_id2word):
 
 
 def create_co_matrix(file_path, word_to_id, vocab_size, window_size):
+=======
+    :return: corpus_replaced(fixed word into id), word2id, id2word
+    """ 
+    make_new_dic = False
+    id_to_word = {}
+    word_to_id = {}
+
+    try:
+        fp = open(pickle_id2word, 'rb')
+        id_to_word = _pickle.load(fp)
+        for id in id_to_word:
+            word_to_id[id_to_word[id]] = id
+
+    except:
+        make_new_dic = True
+
+    corpus_replaced = []
+    
+    # out of vocab
+    id_to_word[-1] = '#'
+    word_to_id['#'] = -1
+
+    for text in tqdm(corpus):
+        words = text.split(" ")
+        words = [w for w in words if len(w) > 0]
+        for word in words:
+            if word not in id_to_word.values():
+                if make_new_dic:
+                    new_id = len(word_to_id)-1
+                    id_to_word[new_id] = word
+                    word_to_id[word] = new_id
+                else:
+                    words[words.index(word)] = '#'
+        corpus_replaced.append(np.array([word_to_id[w] for w in words]))
+    
+    if make_new_dic:
+        fp = open('dic_id2word.pkl', 'wb')
+        _pickle.dump(id_to_word, fp)
+
+    return corpus_replaced, id_to_word
+
+
+def create_co_matrix(corpus, vocab_size, window_size):
+>>>>>>> 432c0265212bba0af3fb12a9412a45db4e4321ad
     """create cooccur matrix
 
     :param corpus: corpus(fixed into id)
@@ -32,12 +87,32 @@ def create_co_matrix(file_path, word_to_id, vocab_size, window_size):
     """
     co_matrix = np.zeros((vocab_size, vocab_size), dtype=np.int32)
 
+<<<<<<< HEAD
     import time
     start = time.time()
 
     with open(file_path) as fp:
         for sentence in fp:
             words = re.sub(r'\n', '', sentence).split(' ')
+=======
+    for sentence in tqdm(corpus):
+        for idx, word_id in enumerate(sentence):
+            if word_id == -1:
+                continue
+            for i in range(1, window_size + 1):
+                left_idx = idx - i
+                right_idx = idx + i
+
+                if left_idx >= 0:
+                    left_word_id = sentence[left_idx]
+                    if left_word_id != -1:
+                        co_matrix[word_id, left_word_id] += 1
+
+                if right_idx < len(sentence):
+                    right_word_id = sentence[right_idx]
+                    if right_word_id != -1:
+                        co_matrix[word_id, right_word_id] += 1
+>>>>>>> 432c0265212bba0af3fb12a9412a45db4e4321ad
 
             for idx, word in enumerate(words):
                 if word in word_to_id:
