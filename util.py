@@ -97,7 +97,7 @@ def absolute_discounting(C, i, j, d):
 
 
 
-def sppmi(C, k, eps=1e-8, has_abs_dis=False):
+def sppmi(C, k, eps=1e-8, has_abs_dis=False, has_cds=False):
     """ compute Shifted Positive PMI (SPPMI)
     :param C: cooccur matrix
     :param k: number of negative samples in w2v sgns
@@ -117,6 +117,10 @@ def sppmi(C, k, eps=1e-8, has_abs_dis=False):
         d = n1 / (n1 + 2 * n2)
         print(f'discount value d: {d}')
 
+    if has_cds:
+        # Context Distributional Smoothing
+        N = N**0.75
+        Nc = Nc**0.75
 
     for i in tqdm(range(C.shape[0])):
         for j in range(C.shape[1]):

@@ -32,7 +32,7 @@ def main(args):
 
     print('Computing sppmi matrix...')
     # use smoothing or not in computing sppmi
-    W = sppmi(C, args.shift, has_abs_dis=args.has_abs_dis)
+    W = sppmi(C, args.shift, has_abs_dis=args.has_abs_dis, has_cds=args.has_cds)
     w_name = "model/SPPMI_w-{}_s-{}".format(args.window_size, args.shift)
     np.save(w_name, W)
 
@@ -56,6 +56,7 @@ def cli_main():
     parser.add_argument('-p', '--pickle_id2word', help='a path of index to word dictionary, dic_id2word.pkl')
     parser.add_argument('-t', '--threshold', type=int, default=0, help='adopt threshold to co-occur matrix or not')
     parser.add_argument('-a',  '--has_abs_dis', action='store_true', help='adopt absolute discounting or not')
+    parser.add_argument('-c',  '--has_cds', action='store_true', help='adopt contextual distributional smoothing or not')
     parser.add_argument('-w', '--window_size', type=int, default=10, help='window size for co-occur matrix')
     parser.add_argument('-s', '--shift', type=int, default=10, help='num of negative samples in computing SPPMI')
     parser.add_argument('-d', '--dim', type=int, default=100, help='size of word vector')
