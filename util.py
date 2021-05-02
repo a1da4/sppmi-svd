@@ -139,14 +139,18 @@ def sppmi(C, k, eps=1e-8, has_abs_dis=False, has_cds=False):
 
     if has_cds:
         # Context Distributional Smoothing
-        N = N ** 0.75
-        Nc = [nc**0.75 for nc in Nc]
+        C_cds = [[c**0.75 for c in C[i]] for i in range(V)]
+        Nc_cds = [sum(cooccur_each) for cooccur_each in C]
+        N_cds = sum(Nc_cds)
+    else:
+        Nc_cds = Nc
+        N_cds = N
 
     for i in tqdm(range(V)):
         M_each = []
         for j in range(V):
             Cwc = absolute_discounting(C, i, j, d) if has_abs_dis else C[i][j]
-            shifted_pmi = log2(Cwc * N / (Nc[i] * Nc[j]) + eps)
+            shifted_pmi = log2(Cwc * N_cds / (Nc[i] * Nc_cds[j]) + eps)
             shifted_positive_pmi = max(0, shifted_pmi - log(k))
             M_each.append(shifted_positive_pmi)
         M.append(M_each)
