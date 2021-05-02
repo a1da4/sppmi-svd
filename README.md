@@ -9,6 +9,8 @@
 * -t, --threshold: int, adopt threshold to cooccur matrix or not
 * -a, --has\_abs\_dis: bool(call this argument: True, else False), adopt absolute discoutning smoothing or not
 * -c, --has\_cds: bool(call this argument: True, else False), adopt contextual distribution smoothing or not
+![スクリーンショット 2020-08-12 23 51 15](https://user-images.githubusercontent.com/45454055/90030195-b8e06280-dcf6-11ea-9aa0-c21055fa44fc.png)
+
 * -w, --window\_size: int, window size in counting co-occurence
 * -s, --shift: int, num of negative samples in word2vec (in SPPMI-SVD, SPPMI uses -log(#negative samples) )
 * -d, --dim: int, size of word vector  
