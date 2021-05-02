@@ -8,6 +8,8 @@
 * -p, --pickle\_id2word: path, pickle of index2word dictionary
 * -t, --threshold: int, adopt threshold to cooccur matrix or not
 * -a, --has\_abs\_dis: bool(call this argument: True, else False), adopt absolute discoutning smoothing or not
+<img width="528" alt="スクリーンショット 2020-03-16 2 28 25" src="https://user-images.githubusercontent.com/45454055/76706835-d1d7ee00-672d-11ea-9d31-0b83d4dbeb79.png">
+
 * -c, --has\_cds: bool(call this argument: True, else False), adopt contextual distribution smoothing or not
 ![スクリーンショット 2020-08-12 23 51 15](https://user-images.githubusercontent.com/45454055/90030195-b8e06280-dcf6-11ea-9aa0-c21055fa44fc.png)
 
