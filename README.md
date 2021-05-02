@@ -6,6 +6,8 @@
 ## Arguments
 * -f, --file\_path: path, corpus you want to train
 * -p, --pickle\_id2word: path, pickle of index2word dictionary
+* --cooccur_pretrained: path, output text file of pre-trained co-occur matrix
+* --sppmi_pretrained: path, output text file of pre-trained sppmi matrix
 * -t, --threshold: int, adopt threshold to cooccur matrix or not
 * -a, --has\_abs\_dis: bool(call this argument: True, else False), adopt absolute discoutning smoothing or not
 <img width="528" alt="スクリーンショット 2020-03-16 2 28 25" src="https://user-images.githubusercontent.com/45454055/76706835-d1d7ee00-672d-11ea-9d31-0b83d4dbeb79.png">
@@ -15,4 +17,4 @@
 
 * -w, --window\_size: int, window size in counting co-occurence
 * -s, --shift: int, num of negative samples in word2vec (in SPPMI-SVD, SPPMI uses -log(#negative samples) )
-* -d, --dim: int, size of word vector  
+* -d, --dim: int, size of word vector
