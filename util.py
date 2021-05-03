@@ -141,7 +141,7 @@ def sppmi(C, k, eps=1e-8, has_abs_dis=False, has_cds=False):
     if has_cds:
         # Context Distributional Smoothing
         C_cds = [[c ** 0.75 for c in C[i]] for i in range(V)]
-        Nc_cds = [sum(cooccur_each) for cooccur_each in C]
+        Nc_cds = [sum(cooccur_each) for cooccur_each in C_cds]
         N_cds = sum(Nc_cds)
     else:
         Nc_cds = Nc
