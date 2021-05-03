@@ -33,13 +33,14 @@ def load_matrix(file_matrix, V):
     matrix = [[0 for _ in range(V)] for _ in range(V)]
     with open(file_matrix) as fp:
         for line in fp:
-            target_id, context_id_values = line.strip().split('\t')
+            target_id, context_id_values = line.strip().split("\t")
             context_id_values = context_id_values.split()
             for context_id_value in context_id_values:
-                context_id, value = context_id_value.split(':')
+                context_id, value = context_id_value.split(":")
                 matrix[int(target_id)][int(context_id)] += float(value)
 
     return matrix
+
 
 def create_co_matrix(file_path, word_to_id, vocab_size, window_size):
     """create co-occur matrix
@@ -139,7 +140,7 @@ def sppmi(C, k, eps=1e-8, has_abs_dis=False, has_cds=False):
 
     if has_cds:
         # Context Distributional Smoothing
-        C_cds = [[c**0.75 for c in C[i]] for i in range(V)]
+        C_cds = [[c ** 0.75 for c in C[i]] for i in range(V)]
         Nc_cds = [sum(cooccur_each) for cooccur_each in C]
         N_cds = sum(Nc_cds)
     else:
@@ -150,7 +151,7 @@ def sppmi(C, k, eps=1e-8, has_abs_dis=False, has_cds=False):
         M_each = []
         for j in range(V):
             Cwc = absolute_discounting(C, i, j, d) if has_abs_dis else C[i][j]
-            shifted_pmi = log2(Cwc * N_cds / (Nc[i] * Nc_cds[j]) + eps)
+            shifted_pmi = log2(Cwc * N_cds / (Nc[i] * Nc_cds[j] + eps))
             shifted_positive_pmi = max(0, shifted_pmi - log(k))
             M_each.append(shifted_positive_pmi)
         M.append(M_each)
