@@ -151,7 +151,6 @@ def sppmi(C, k, eps=1e-8, has_abs_dis=False, has_cds=False):
         M_each = []
         for j in range(V):
             Cwc = absolute_discounting(C, i, j, d) if has_abs_dis else C[i][j]
-            print(f'Cwc: {Cwc}, N_cds: {N_cds}, Nc_i: {Nc[i]}, Nc_cds_j: {Nc_cds[j]}')
             shifted_pmi = log2(Cwc * N_cds / (Nc[i] * Nc_cds[j] + eps) + eps)
             shifted_positive_pmi = max(0, shifted_pmi - log(k))
             M_each.append(shifted_positive_pmi)
