@@ -8,6 +8,36 @@
 1. `subsample.py` (if you need): remove words with a frequency-based probability to mitigate the effects of high-frequency words.
    - -f, --file\_path: path, corpus
    - -t, --threshold: float, threshold of remove probability (default is 1e-3)
+   ![スクリーンショット 2022-03-13 17 32 56](https://user-images.githubusercontent.com/45454055/158051633-a26ef501-2509-4c71-bf1e-2166773d4ad1.png)  
+   many papers assign t to 1e-5, but in this case (_kokoro_, Soseki Natsume, 6383 types, 102763 tokens), **87% of words are removed.**
+   ```
+   INFO:root:[main] args: Namespace(file_path='kokoro_processed.txt', threshold=1e-05)
+   INFO:root:[main] Count (raw) word frequency...
+   INFO:root:[main] - most frequent words: [('の', 5818), ('た', 5350), ('。', 4654), ('に', 4363), ('は', 4037)]
+   INFO:root:[main] - total_freq: 102763
+   INFO:root:[main] Subsampling...
+   INFO:root:[main] - remove probability of most frequent words: [('の', 0.9867097996283141), ('た', 0.9861406936020674), ('。', 0.9851404657378731), ('に', 0.9846529191631387), ('は', 0.984045286407889)]
+   INFO:root:[main] Save processed document...
+   INFO:root:[main] Count (subsampled) word frequency...
+   INFO:root:[main] - most frequent words: [('た', 83), ('、', 76), ('は', 71), ('。', 71), ('て', 69)]
+   INFO:root:[main] - total_freq: 13380
+   INFO:root:[main] - 0.869797495207419% words are removed
+   ```
+   When we assign t to 0.01, 21% of words are removed (just right?).
+   ```
+   INFO:root:[main] args: Namespace(file_path='kokoro_processed.txt', threshold=0.01)
+   INFO:root:[main] Count (raw) word frequency...
+   INFO:root:[main] - most frequent words: [('の', 5818), ('た', 5350), ('。', 4654), ('に', 4363), ('は', 4037)]
+   INFO:root:[main] - total_freq: 102763
+   INFO:root:[main] Subsampling...
+   INFO:root:[main] - remove probability of most frequent words: [('の', 0.5797269626545619), ('た', 0.5617302499238903), ('。', 0.5301002676236953), ('に', 0.5146826912079521), ('は', 0.4954676563328255)]
+   INFO:root:[main] Save processed document...
+   INFO:root:[main] Count (subsampled) word frequency...
+   INFO:root:[main] - most frequent words: [('の', 2401), ('た', 2277), ('。', 2181), ('に', 2101), ('は', 2051)]
+   INFO:root:[main] - total_freq: 81176
+   INFO:root:[main] - 0.21006587974270896% words are removed
+   ```
+   From these results, **we need to tune this paramter t.** 
 2. `make\_id2word.py`: obtain target words from corpus.
    - -f, --file\_path: path, corpus
    - -t, --threshold: int, threshold of target words
