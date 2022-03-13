@@ -37,7 +37,7 @@
    INFO:root:[main] - total_freq: 81176
    INFO:root:[main] - 0.21006587974270896% words are removed
    ```
-   From these results, **we need to tune this paramter t.** 
+   From these results, **we need to tune this parameter t.** 
 2. `make\_id2word.py`: obtain target words from corpus.
    - -f, --file\_path: path, corpus
    - -t, --threshold: int, threshold of target words
