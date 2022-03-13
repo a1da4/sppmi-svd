@@ -9,7 +9,7 @@
    - -f, --file\_path: path, corpus
    - -t, --threshold: float, threshold of remove probability (default is 1e-3)
    ![スクリーンショット 2022-03-13 17 32 56](https://user-images.githubusercontent.com/45454055/158051633-a26ef501-2509-4c71-bf1e-2166773d4ad1.png)  
-   many papers assign t to 1e-5, but in this case (_kokoro_, Soseki Natsume, 6383 types, 102763 tokens), **87% of words are removed.**
+   many papers assign t to 1e-5, but in this case ([_kokoro_, Soseki Natsume](https://www.aozora.gr.jp/cards/000148/card773.html), 6383 types, 102763 tokens), **87% of words are removed.**
    ```
    INFO:root:[main] args: Namespace(file_path='kokoro_processed.txt', threshold=1e-05)
    INFO:root:[main] Count (raw) word frequency...
