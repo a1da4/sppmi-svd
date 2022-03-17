@@ -6,9 +6,10 @@ import numpy as np
 
 
 def compute_remove_prob(word, total_freq, word2freq, t=1e-3):
+    eps = 1e-8
     raw_freq = word2freq[word]
     corpus_freq = raw_freq / total_freq
-    remove_prob = 1 - np.sqrt(t / corpus_freq)
+    remove_prob = 1 - np.sqrt(t / (corpus_freq + eps))
     return remove_prob
 
 
